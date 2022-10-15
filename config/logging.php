@@ -3,6 +3,7 @@
 use Monolog\Handler\NullHandler;
 use Monolog\Handler\StreamHandler;
 use Monolog\Handler\SyslogUdpHandler;
+use App\Logging\Telegram\TelegramLoggerHandler;
 
 return [
 
@@ -117,6 +118,14 @@ return [
         'emergency' => [
             'path' => storage_path('logs/laravel.log'),
         ],
+
+        'telegram'=>[
+            'driver'=>'custom',
+            'via'=>TelegramLoggerHandler::class,
+            'level'=>env('LOG_LEVEL', 'debug'),
+            'chat_id'=>'',
+            'token'=>'',
+        ], 
     ],
 
 ];
