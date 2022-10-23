@@ -123,8 +123,8 @@ return [
             'driver'=>'custom',
             'via'=>TelegramLoggerFactory::class,
             'level'=>env('LOG_LEVEL', 'debug'),
-            'chat_id'=> -586210640,
-            'token'=>'5567877094:AAEYZQ3lev5OaLLBZjydcwRJwAy68JjlO7M',
+            'chat_id'=> env('LOGGER_TELEGRAM_BOT_CHAT_ID', ''),
+            'token'=>env('LOGGER_TELEGRAM_BOT_TOKEN', ''),
         ], 
     ],
 
