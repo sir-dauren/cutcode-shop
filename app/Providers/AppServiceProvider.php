@@ -2,12 +2,13 @@
 
 namespace App\Providers;
 
+use App\Http\Kernel;
+
+use Carbon\CarbonInterval;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Connection;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\ServiceProvider;
-use App\Http\Kernel;
-use Carbon\CarbonInterval;
 
 
 class AppServiceProvider extends ServiceProvider
