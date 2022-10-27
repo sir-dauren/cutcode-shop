@@ -1,16 +1,37 @@
 <?php
 
-use App\Models\Product;
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\HomeController;
 use Illuminate\Support\Facades\Route;
 
 
-Route::get('/', function () {
-    
-    dump(Product::query()
-        ->select(['id', 'title', 'brand_id'])
-        ->with(['categories', 'brand'])
-        ->where('id', 1)
-        ->get());
+Route::controller(AuthController::class)->group(function(){
 
-    return view('welcome');
+    Route::get('/login', 'index')->name('login');
+    Route::post('/login', 'signIn')->name('signIn');
+
+    Route::get('/sign-up', 'signUp')->name('signUp');
+    Route::post('/sign-up', 'store')->name('store');
+
+    Route::delete('/logout', 'logOut')->name('logOut');
+
+    Route::get('/forgot-password', 'forgot')
+        ->middleware('guest')
+        ->name('password.request');
+
+    Route::post('/forgot-password', 'forgotPassword')
+        ->middleware('guest')
+        ->name('password.email');
+
+    
+    Route::get('/reset-password/{token}', 'reset')
+        ->middleware('guest')
+        ->name('password.reset');
+
+    Route::post('/reset-password', 'resetPassword')
+        ->middleware('guest')
+        ->name('password.update');
+
 });
+
+Route::get('/', HomeController::class)->name('home');
