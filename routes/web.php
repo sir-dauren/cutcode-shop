@@ -1,8 +1,11 @@
 <?php
 
+use App\Models\User;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\HomeController;
-use Illuminate\Support\Facades\Route;
+use Laravel\Socialite\Facades\Socialite;
 
 
 Route::controller(AuthController::class)->group(function(){
@@ -31,6 +34,12 @@ Route::controller(AuthController::class)->group(function(){
     Route::post('/reset-password', 'resetPassword')
         ->middleware('guest')
         ->name('password.update');
+
+    Route::get('/auth/socialite/github', 'github')
+        ->name('socialite.github');
+    
+    Route::get('/auth/socialite/githube/callback', 'githubCallback')
+        ->name('socialite.githube.callback');
 
 });
 

@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Password;
 use Doctrine\DBAL\Driver\IBMDB2\Exception\Factory;
 use Illuminate\Console\Application;
 use Illuminate\View\View;
-
+use Laravel\Socialite\Facades\Socialite;
 
 class AuthController extends Controller
 {
@@ -115,4 +115,27 @@ class AuthController extends Controller
                     ? redirect()->route('login')->with('message', __($status))
                     : back()->withErrors(['email' => [__($status)]]);
     }
+
+    public function github(): RedirectResponse
+    {
+
+        return Socialite::driver('github')->redirect();
+    }
+
+    public function  githubCallback(){
+
+        $githubUser = Socialite::driver('github')->user();
+ 
+        $user = User::query()->updateOrCreate([
+            'github_id' => $githubUser->id,
+        ], [
+            'name' => $githubUser->name,
+            'email' => $githubUser->email,
+            'password' => bcrypt(str()->random(20)),
+        ]);
+    
+        auth()->login($user);
+    
+        return redirect()->intended(route('home'));
+    }   
 }
