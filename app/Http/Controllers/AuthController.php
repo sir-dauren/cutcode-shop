@@ -1,23 +1,24 @@
 <?php
 
 namespace App\Http\Controllers;
+use App\Support\Flash\Flash;
 use App\Models\User;
+use Illuminate\View\View;
+use Illuminate\Console\Application;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Auth\Events\Registered;
 use App\Http\Requests\SignInFormRequest;
 use App\Http\Requests\SignUpFormRequest;
-use App\Http\Requests\ForgotPasswordFormRequest;
-use App\Http\Requests\ResetPasswordFormRequest;
-use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Support\Facades\Password;
-use Doctrine\DBAL\Driver\IBMDB2\Exception\Factory;
-use Illuminate\Console\Application;
-use Illuminate\View\View;
 use Laravel\Socialite\Facades\Socialite;
+use Illuminate\Auth\Events\PasswordReset;
+use App\Http\Requests\ResetPasswordFormRequest;
+use App\Http\Requests\ForgotPasswordFormRequest;
+use Doctrine\DBAL\Driver\IBMDB2\Exception\Factory;
 
 class AuthController extends Controller
 {
-    public function index(): Factory|View|Application
+    public function index(): Factory|View|Application|RedirectResponse
     {
         return view('layouts.auth.index');
     }
@@ -83,10 +84,14 @@ class AuthController extends Controller
         $status = Password::sendResetLink(
             $request->only('email')
         );
-    
-        return $status === Password::RESET_LINK_SENT
-                    ? back()->with(['message' => __($status)])
-                    : back()->withErrors(['email' => __($status)]);
+        
+        if($status === Password::RESET_LINK_SENT){
+            flash()->info(__($status));
+
+            return back();
+        }
+        
+        return back()->withErrors(['email' => __($status)]);
     }
 
     public function reset(string $token): Factory|View|Application
@@ -110,10 +115,16 @@ class AuthController extends Controller
                 event(new PasswordReset($user));
             }
         );
+
+        if($status === Password::PASSWORD_RESET){
+            flash()->info(__($status));
+
+            return back();
+        }
+        
+        return back()->withErrors(['email' => __($status)]);
     
-        return $status === Password::PASSWORD_RESET
-                    ? redirect()->route('login')->with('message', __($status))
-                    : back()->withErrors(['email' => [__($status)]]);
+        return redirect()->route('login')->with('message', __($status));
     }
 
     public function github(): RedirectResponse
